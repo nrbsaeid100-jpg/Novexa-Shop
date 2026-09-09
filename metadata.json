@@ -1,0 +1,6 @@
+{
+  "name": "Novexa",
+  "description": "Complete multi-category e-commerce platform for Bangladesh with shopping cart, bKash/Nagad/Rocket/COD checkout, order tracking, and admin dashboard.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

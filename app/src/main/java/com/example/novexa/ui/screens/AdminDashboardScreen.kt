@@ -50,30 +50,35 @@ fun AdminDashboardScreen(
 
     Scaffold(
         topBar = {
-            Surface(color = NovexaBlack, shadowElevation = 3.dp) {
-                Column {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            IconButton(onClick = onBack, modifier = Modifier.testTag("btn_admin_back")) {
-                                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+            Surface(color = NovexaBlueDark, shadowElevation = 3.dp) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(NovexaHeaderGradient)
+                ) {
+                    Column {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .statusBarsPadding()
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(onClick = onBack, modifier = Modifier.testTag("btn_admin_back")) {
+                                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                                }
+                                Column {
+                                    Text("Novexa Admin Console", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
+                                    Text("Dhaka Operations Center", style = MaterialTheme.typography.labelSmall, color = NovexaBlueLight)
+                                }
                             }
-                            Column {
-                                Text("Novexa Admin Console", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = Color.White)
-                                Text("Dhaka Operations Center", style = MaterialTheme.typography.labelSmall, color = Color(0xFF94A3B8))
-                            }
-                        }
 
-                        IconButton(onClick = { adminViewModel.refreshAnalytics() }) {
-                            Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.White)
+                            IconButton(onClick = { adminViewModel.refreshAnalytics() }) {
+                                Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.White)
+                            }
                         }
-                    }
 
                     // Navigation Tabs
                     ScrollableTabRow(
@@ -87,6 +92,7 @@ fun AdminDashboardScreen(
                         Tab(selected = selectedTab == 2, onClick = { selectedTab = 2 }, text = { Text("Products & Stock", fontSize = 12.sp) })
                         Tab(selected = selectedTab == 3, onClick = { selectedTab = 3 }, text = { Text("Stock Audit", fontSize = 12.sp) })
                         Tab(selected = selectedTab == 4, onClick = { selectedTab = 4 }, text = { Text("Coupons", fontSize = 12.sp) })
+                    }
                     }
                 }
             }

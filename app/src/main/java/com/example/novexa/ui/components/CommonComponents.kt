@@ -66,151 +66,158 @@ fun NovexaHeader(
     onBack: () -> Unit = {}
 ) {
     Surface(
-        color = MaterialTheme.colorScheme.surface,
-        shadowElevation = 2.dp
+        color = NovexaBlueDark,
+        shadowElevation = 4.dp
     ) {
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+                .background(NovexaHeaderGradient)
         ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (showBack) {
-                    IconButton(
-                        onClick = onBack,
-                        modifier = Modifier.testTag("btn_back")
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
-                            tint = NovexaBlack
-                        )
-                    }
-                } else {
-                    // Novexa Brand Emblem & Title
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable { }
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(34.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Brush.linearGradient(listOf(NovexaBlue, NovexaBlack))),
-                            contentAlignment = Alignment.Center
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (showBack) {
+                        IconButton(
+                            onClick = onBack,
+                            modifier = Modifier.testTag("btn_back")
                         ) {
-                            Text(
-                                text = "N",
-                                color = Color.White,
-                                fontWeight = FontWeight.Black,
-                                fontSize = 20.sp
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back",
+                                tint = Color.White
                             )
                         }
+                    } else {
+                        // Novexa Brand Emblem & Title
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable { }
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(34.dp)
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .background(Brush.linearGradient(listOf(NovexaBlueLight, NovexaBlue))),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    text = "N",
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Black,
+                                    fontSize = 20.sp
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Column {
+                                Text(
+                                    text = "NOVEXA",
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontWeight = FontWeight.Black,
+                                    color = Color.White,
+                                    letterSpacing = 1.sp
+                                )
+                                Text(
+                                    text = "BANGLADESH",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = NovexaBlueLight,
+                                    letterSpacing = 1.5.sp
+                                )
+                            }
+                        }
+                    }
+
+                    if (title != null && showBack) {
                         Spacer(modifier = Modifier.width(8.dp))
-                        Column {
-                            Text(
-                                text = "NOVEXA",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Black,
-                                color = NovexaBlack,
-                                letterSpacing = 1.sp
-                            )
-                            Text(
-                                text = "BANGLADESH",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = NovexaBlue,
-                                letterSpacing = 1.5.sp
-                            )
-                        }
-                    }
-                }
-
-                if (title != null && showBack) {
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-
-            // Header Action Icons
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(
-                    onClick = onSearchClick,
-                    modifier = Modifier.testTag("btn_header_search")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Search,
-                        contentDescription = "Search",
-                        tint = NovexaBlack
-                    )
-                }
-
-                IconButton(
-                    onClick = onWishlistClick,
-                    modifier = Modifier.testTag("btn_header_wishlist")
-                ) {
-                    BadgedBox(
-                        badge = {
-                            if (wishlistCount > 0) {
-                                Badge(
-                                    containerColor = NovexaAccentRose,
-                                    contentColor = Color.White
-                                ) {
-                                    Text("$wishlistCount")
-                                }
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Outlined.FavoriteBorder,
-                            contentDescription = "Wishlist",
-                            tint = NovexaBlack
+                        Text(
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
                 }
 
-                IconButton(
-                    onClick = onCartClick,
-                    modifier = Modifier.testTag("btn_header_cart")
-                ) {
-                    BadgedBox(
-                        badge = {
-                            if (cartItemCount > 0) {
-                                Badge(
-                                    containerColor = NovexaBlue,
-                                    contentColor = Color.White
-                                ) {
-                                    Text("$cartItemCount")
-                                }
-                            }
-                        }
+                // Header Action Icons
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = onSearchClick,
+                        modifier = Modifier.testTag("btn_header_search")
                     ) {
                         Icon(
-                            imageVector = Icons.Outlined.ShoppingCart,
-                            contentDescription = "Cart",
-                            tint = NovexaBlack
+                            imageVector = Icons.Default.Search,
+                            contentDescription = "Search",
+                            tint = Color.White
                         )
                     }
-                }
 
-                IconButton(
-                    onClick = onAdminClick,
-                    modifier = Modifier.testTag("btn_header_admin")
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.AdminPanelSettings,
-                        contentDescription = "Admin Panel",
-                        tint = NovexaBlue
-                    )
+                    IconButton(
+                        onClick = onWishlistClick,
+                        modifier = Modifier.testTag("btn_header_wishlist")
+                    ) {
+                        BadgedBox(
+                            badge = {
+                                if (wishlistCount > 0) {
+                                    Badge(
+                                        containerColor = NovexaAccentRose,
+                                        contentColor = Color.White
+                                    ) {
+                                        Text("$wishlistCount")
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Wishlist",
+                                tint = Color.White
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = onCartClick,
+                        modifier = Modifier.testTag("btn_header_cart")
+                    ) {
+                        BadgedBox(
+                            badge = {
+                                if (cartItemCount > 0) {
+                                    Badge(
+                                        containerColor = NovexaBlueLight,
+                                        contentColor = Color.White
+                                    ) {
+                                        Text("$cartItemCount")
+                                    }
+                                }
+                            }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.ShoppingCart,
+                                contentDescription = "Cart",
+                                tint = Color.White
+                            )
+                        }
+                    }
+
+                    IconButton(
+                        onClick = onAdminClick,
+                        modifier = Modifier.testTag("btn_header_admin")
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AdminPanelSettings,
+                            contentDescription = "Admin Panel",
+                            tint = NovexaBlueLight
+                        )
+                    }
                 }
             }
         }

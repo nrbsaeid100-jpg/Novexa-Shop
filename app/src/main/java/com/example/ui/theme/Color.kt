@@ -58,6 +58,9 @@ val NovexaRocketPurple = Color(0xFF8C3494)
 val NovexaRocketContainer = Color(0xFFFAF5FF)
 
 // Brushes & Atmospheric Gradients
+val NovexaHeaderGradient = Brush.horizontalGradient(
+    colors = listOf(Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF1E40AF))
+)
 val NovexaHeroGradient = Brush.horizontalGradient(
     colors = listOf(Color(0xFF0F172A), Color(0xFF1E3A8A), Color(0xFF1E40AF))
 )

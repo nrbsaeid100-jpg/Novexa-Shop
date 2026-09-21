@@ -73,45 +73,54 @@ fun ProductDetailsScreen(
 
     Scaffold(
         topBar = {
-            Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp) {
-                Row(
+            Surface(
+                color = NovexaBlueDark,
+                shadowElevation = 3.dp
+            ) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                        .background(NovexaHeaderGradient)
                 ) {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag("btn_details_back")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NovexaBlack)
-                    }
-
-                    Text(
-                        text = product.brand,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = NovexaBlack
-                    )
-
-                    Row {
-                        IconButton(onClick = { viewModel.toggleWishlist(product.id) }) {
-                            Icon(
-                                imageVector = if (isWishlisted) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-                                contentDescription = "Wishlist",
-                                tint = if (isWishlisted) NovexaAccentRose else NovexaBlack
-                            )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onBack, modifier = Modifier.testTag("btn_details_back")) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
                         }
-                        IconButton(onClick = onNavigateToCart) {
-                            BadgedBox(
-                                badge = {
-                                    if (cartItemCount > 0) {
-                                        Badge(containerColor = NovexaBlue, contentColor = Color.White) {
-                                            Text("$cartItemCount")
+
+                        Text(
+                            text = product.brand,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+
+                        Row {
+                            IconButton(onClick = { viewModel.toggleWishlist(product.id) }) {
+                                Icon(
+                                    imageVector = if (isWishlisted) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
+                                    contentDescription = "Wishlist",
+                                    tint = if (isWishlisted) NovexaAccentRose else Color.White
+                                )
+                            }
+                            IconButton(onClick = onNavigateToCart) {
+                                BadgedBox(
+                                    badge = {
+                                        if (cartItemCount > 0) {
+                                            Badge(containerColor = NovexaAccentRose, contentColor = Color.White) {
+                                                Text("$cartItemCount")
+                                            }
                                         }
                                     }
+                                ) {
+                                    Icon(Icons.Outlined.ShoppingCart, contentDescription = "Cart", tint = Color.White)
                                 }
-                            ) {
-                                Icon(Icons.Outlined.ShoppingCart, contentDescription = "Cart", tint = NovexaBlack)
                             }
                         }
                     }

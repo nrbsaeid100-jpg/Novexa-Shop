@@ -42,23 +42,33 @@ fun OrderTrackingScreen(
 
     Scaffold(
         topBar = {
-            Surface(color = MaterialTheme.colorScheme.surface, shadowElevation = 1.dp) {
-                Row(
+            Surface(
+                color = NovexaBlueDark,
+                shadowElevation = 3.dp
+            ) {
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .statusBarsPadding()
-                        .padding(horizontal = 12.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .background(NovexaHeaderGradient)
                 ) {
-                    IconButton(onClick = onBack, modifier = Modifier.testTag("btn_tracking_back")) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = NovexaBlack)
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding()
+                            .padding(horizontal = 12.dp, vertical = 10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = onBack, modifier = Modifier.testTag("btn_tracking_back")) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.White)
+                        }
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Order #${liveOrder.orderNumber}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                     }
-                    Text(
-                        text = "Order #${liveOrder.orderNumber}",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = NovexaBlack
-                    )
                 }
             }
         },

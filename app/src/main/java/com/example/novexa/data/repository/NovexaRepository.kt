@@ -2,6 +2,7 @@ package com.example.novexa.data.repository
 
 import com.example.novexa.data.local.NovexaDatabase
 import com.example.novexa.data.local.entity.*
+import com.example.novexa.data.remote.firestore.FirestoreService
 import com.example.novexa.payment.PaymentGatewayService
 import com.example.novexa.payment.PaymentRequest
 import com.example.novexa.payment.PaymentResult
@@ -63,7 +64,8 @@ data class AdminAnalyticsSummary(
 
 class NovexaRepository(
     private val database: NovexaDatabase,
-    private val paymentGatewayService: PaymentGatewayService = PaymentGatewayService()
+    private val paymentGatewayService: PaymentGatewayService = PaymentGatewayService(),
+    val firestoreService: FirestoreService = FirestoreService()
 ) {
     private val userDao = database.userDao()
     private val categoryDao = database.categoryDao()
@@ -141,6 +143,7 @@ class NovexaRepository(
 
     suspend fun saveProduct(product: ProductEntity, isNew: Boolean = false): Long = withContext(Dispatchers.IO) {
         val id = productDao.insertProduct(product)
+        val savedProduct = product.copy(id = id)
         if (isNew) {
             inventoryDao.insertTransaction(
                 InventoryTransactionEntity(
@@ -154,11 +157,14 @@ class NovexaRepository(
                 )
             )
         }
+        // Cloud Firestore Sync for Product Catalog
+        firestoreService.saveProduct(savedProduct)
         id
     }
 
     suspend fun deleteProduct(product: ProductEntity) = withContext(Dispatchers.IO) {
         productDao.deleteProduct(product)
+        firestoreService.deleteProduct(product)
     }
 
     // --- Offline-First Caching & Data Synchronization ---
@@ -168,6 +174,31 @@ class NovexaRepository(
 
     suspend fun syncProductCatalog(remoteProducts: List<ProductEntity>) = withContext(Dispatchers.IO) {
         productDao.insertAll(remoteProducts.map { it.copy(isSynced = true, updatedAt = System.currentTimeMillis()) })
+        firestoreService.syncProductCatalog(remoteProducts)
+    }
+
+    /**
+     * Pull remote product updates from Cloud Firestore into local Room cache
+     */
+    suspend fun refreshCatalogFromFirestore(): Result<Int> = withContext(Dispatchers.IO) {
+        val result = firestoreService.fetchProducts()
+        result.fold(
+            onSuccess = { remoteProducts ->
+                if (remoteProducts.isNotEmpty()) {
+                    productDao.insertAll(remoteProducts.map { it.copy(isSynced = true) })
+                }
+                Result.success(remoteProducts.size)
+            },
+            onFailure = { Result.failure(it) }
+        )
+    }
+
+    /**
+     * Push entire local catalog to Firestore to initialize the cloud database
+     */
+    suspend fun pushLocalCatalogToFirestore(): Result<Int> = withContext(Dispatchers.IO) {
+        val localProducts = productDao.getAllProducts().first()
+        firestoreService.syncProductCatalog(localProducts)
     }
 
     suspend fun getProductCount(): Int = withContext(Dispatchers.IO) {
@@ -200,22 +231,26 @@ class NovexaRepository(
             return@withContext Result.failure(Exception("Only ${product.stockQuantity} items in stock"))
         }
         val existing = cartDao.findCartItem(userId, productId, variantId)
+        val cartItemToSync: CartItemEntity
         if (existing != null) {
             val newQty = existing.quantity + quantity
             if (newQty > product.stockQuantity) {
                 return@withContext Result.failure(Exception("Cannot add more than available stock (${product.stockQuantity})"))
             }
             cartDao.updateQuantity(existing.id, newQty)
+            cartItemToSync = existing.copy(quantity = newQty)
         } else {
-            cartDao.insertCartItem(
-                CartItemEntity(
-                    userId = userId,
-                    productId = productId,
-                    variantId = variantId,
-                    quantity = quantity
-                )
+            val newItem = CartItemEntity(
+                userId = userId,
+                productId = productId,
+                variantId = variantId,
+                quantity = quantity
             )
+            val insertedId = cartDao.insertCartItem(newItem)
+            cartItemToSync = newItem.copy(id = insertedId)
         }
+        // Cloud Firestore Sync for Shopping Cart
+        firestoreService.saveCartItem(cartItemToSync)
         Result.success(Unit)
     }
 
@@ -237,6 +272,8 @@ class NovexaRepository(
 
     suspend fun clearCart(userId: Long) = withContext(Dispatchers.IO) {
         cartDao.clearCart(userId)
+        // Cloud Firestore Sync: Clear User Cart
+        firestoreService.clearUserCart(userId)
     }
 
     // --- Server-side Price & Stock Calculation ---
@@ -426,6 +463,7 @@ class NovexaRepository(
 
         // 7. Clear Cart
         cartDao.clearCart(request.userId)
+        firestoreService.clearUserCart(request.userId)
 
         // 8. Notification
         notificationDao.insertNotification(
@@ -437,7 +475,11 @@ class NovexaRepository(
             )
         )
 
-        Result.success(order.copy(id = orderId))
+        val insertedOrder = order.copy(id = orderId)
+        // Cloud Firestore Sync for Orders & Order Items
+        firestoreService.saveOrder(insertedOrder, orderItemsToInsert)
+
+        Result.success(insertedOrder)
     }
 
     // --- Order Operations ---
@@ -451,6 +493,9 @@ class NovexaRepository(
     suspend fun updateOrderStatus(orderId: Long, newStatus: String): Boolean = withContext(Dispatchers.IO) {
         val order = orderDao.getOrderById(orderId) ?: return@withContext false
         orderDao.updateOrderStatus(orderId, newStatus)
+
+        // Cloud Firestore Sync for Order Status
+        firestoreService.updateOrderStatus(order.orderNumber, order.userId, newStatus)
 
         // Restock if cancelled
         if (newStatus == "Cancelled" && order.orderStatus != "Cancelled") {

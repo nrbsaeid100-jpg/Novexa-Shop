@@ -233,6 +233,28 @@ fun AdminDashboardScreen(
                 1 -> {
                     // --- ORDERS MANAGEMENT ---
                     item {
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFF0FDF4)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(12.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.CloudDone, contentDescription = null, tint = NovexaAccentEmerald)
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Column {
+                                    Text("Firestore Live Orders Active", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleSmall, color = Color(0xFF166534))
+                                    Text("Orders and status updates are synchronized with Cloud Firestore in real-time.", style = MaterialTheme.typography.labelSmall, color = NovexaTextSecondary)
+                                }
+                            }
+                        }
+                    }
+
+                    item {
                         Text("Order Fulfillment & Status Control", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = NovexaBlack)
                         Text("Tap any order to update lifecycle (Pending → Confirmed → Processing → Shipped → Delivered → Cancelled).", style = MaterialTheme.typography.bodySmall, color = NovexaTextSecondary)
                     }
@@ -303,6 +325,72 @@ fun AdminDashboardScreen(
 
                 2 -> {
                     // --- PRODUCTS & STOCK ---
+                    item {
+                        // Cloud Firestore Catalog Sync Bar
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = Color(0xFFEFF6FF)),
+                            shape = RoundedCornerShape(12.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(
+                                            Icons.Default.CloudSync,
+                                            contentDescription = "Cloud Firestore",
+                                            tint = NovexaBlue
+                                        )
+                                        Spacer(modifier = Modifier.width(8.dp))
+                                        Column {
+                                            Text(
+                                                "Cloud Firestore Catalog",
+                                                fontWeight = FontWeight.Bold,
+                                                style = MaterialTheme.typography.titleSmall,
+                                                color = NovexaBlueDark
+                                            )
+                                            Text(
+                                                "Real-time cloud database synchronization",
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = NovexaTextSecondary
+                                            )
+                                        }
+                                    }
+                                }
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    OutlinedButton(
+                                        onClick = { adminViewModel.pushCatalogToFirestore() },
+                                        modifier = Modifier.weight(1f),
+                                        shape = RoundedCornerShape(8.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    ) {
+                                        Icon(Icons.Default.CloudUpload, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Push to Cloud", fontSize = 12.sp)
+                                    }
+                                    Button(
+                                        onClick = { adminViewModel.pullCatalogFromFirestore() },
+                                        modifier = Modifier.weight(1f),
+                                        colors = ButtonDefaults.buttonColors(containerColor = NovexaBlue),
+                                        shape = RoundedCornerShape(8.dp),
+                                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 6.dp)
+                                    ) {
+                                        Icon(Icons.Default.CloudDownload, contentDescription = null, modifier = Modifier.size(16.dp))
+                                        Spacer(modifier = Modifier.width(4.dp))
+                                        Text("Pull from Cloud", fontSize = 12.sp)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     item {
                         Row(
                             modifier = Modifier.fillMaxWidth(),

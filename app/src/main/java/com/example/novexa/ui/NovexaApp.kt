@@ -25,6 +25,7 @@ import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import com.example.novexa.data.local.NovexaDatabase
 import com.example.novexa.data.local.entity.OrderEntity
+import com.example.novexa.data.remote.firestore.FirestoreService
 import com.example.novexa.data.repository.NovexaRepository
 import com.example.novexa.ui.screens.*
 import com.example.ui.theme.*
@@ -52,7 +53,8 @@ fun NovexaApp() {
     val context = LocalContext.current
     val appScope = remember { CoroutineScope(Dispatchers.IO) }
     val database = remember { NovexaDatabase.getDatabase(context, appScope) }
-    val repository = remember { NovexaRepository(database) }
+    val firestoreService = remember { FirestoreService() }
+    val repository = remember { NovexaRepository(database, firestoreService = firestoreService) }
 
     val novexaViewModel: NovexaViewModel = viewModel(
         factory = NovexaViewModel.Factory(repository)

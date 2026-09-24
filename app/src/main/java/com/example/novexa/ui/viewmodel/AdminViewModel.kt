@@ -94,6 +94,35 @@ class AdminViewModel(
         }
     }
 
+    /**
+     * Upload / Sync local product catalog to Cloud Firestore
+     */
+    fun pushCatalogToFirestore() {
+        viewModelScope.launch {
+            val result = repository.pushLocalCatalogToFirestore()
+            result.onSuccess { count ->
+                _adminMessage.value = "Synced $count products to Cloud Firestore successfully!"
+            }.onFailure {
+                _adminMessage.value = "Firestore sync error: ${it.message}"
+            }
+        }
+    }
+
+    /**
+     * Pull remote catalog changes from Cloud Firestore into local cache
+     */
+    fun pullCatalogFromFirestore() {
+        viewModelScope.launch {
+            val result = repository.refreshCatalogFromFirestore()
+            result.onSuccess { count ->
+                _adminMessage.value = "Fetched $count products from Cloud Firestore."
+                refreshAnalytics()
+            }.onFailure {
+                _adminMessage.value = "Firestore fetch error: ${it.message}"
+            }
+        }
+    }
+
     fun createCoupon(code: String, type: String, value: Double, minOrder: Double, maxDiscount: Double) {
         viewModelScope.launch {
             val coupon = CouponEntity(

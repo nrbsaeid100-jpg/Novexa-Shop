@@ -78,14 +78,22 @@ object DatabaseModule {
     fun provideNotificationDao(database: AppDatabase): NotificationDao = database.notificationDao()
 
     /**
-     * Provides the unified [NovexaRepository] injected with [AppDatabase].
+     * Provides the [com.example.novexa.data.remote.firestore.FirestoreService] for Cloud Firestore synchronization.
+     */
+    fun provideFirestoreService(): com.example.novexa.data.remote.firestore.FirestoreService {
+        return com.example.novexa.data.remote.firestore.FirestoreService()
+    }
+
+    /**
+     * Provides the unified [NovexaRepository] injected with [AppDatabase] and [FirestoreService].
      */
     fun provideRepository(
         context: Context,
         scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     ): NovexaRepository {
         val db = provideAppDatabase(context, scope)
-        return NovexaRepository(db)
+        val firestoreService = provideFirestoreService()
+        return NovexaRepository(db, firestoreService = firestoreService)
     }
 }
 
@@ -95,6 +103,7 @@ object DatabaseModule {
 interface AppContainer {
     val database: AppDatabase
     val productDao: ProductDao
+    val firestoreService: com.example.novexa.data.remote.firestore.FirestoreService
     val repository: NovexaRepository
 }
 
@@ -108,6 +117,10 @@ class DefaultAppContainer(private val context: Context) : AppContainer {
 
     override val productDao: ProductDao by lazy {
         DatabaseModule.provideProductDao(database)
+    }
+
+    override val firestoreService: com.example.novexa.data.remote.firestore.FirestoreService by lazy {
+        DatabaseModule.provideFirestoreService()
     }
 
     override val repository: NovexaRepository by lazy {
